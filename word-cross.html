@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<!-- Kye Miller and Samantha Schulte -->
+<head>
+<title>Drow Syscro</title>
+<style>
+        table, td{
+                border: 1px solid black;
+        }
+</style>
+</head>
+<body>
+        <h2>Welcome to Drow Syscro</h2>
+        <button onclick="newGame() ">New Game</button>
+        <br></br>
+</table>
+
+<table id="gameboard" style="width:35%">
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+        <tr><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>
+</table>
+<br></br>
+
+<table id="anagram_letters" style="width:45%">
+        <tr>
+                <td id="p1">_</td><td id="p2">_</td><td id="p3">_</td><td id="p4">_</td><td id="p5">_</td><td id="p6">_</td><td id="p7">_</td>
+        </tr>
+         <tr>
+                <td colspan="7" id="shuffle"><button onclick="Shuffle() ">Shuffle</td>
+        </tr>
+        <tr>
+                <td>_</td><td>_</td><td>_</td><td>_</td><td>_</td><td>_</td><td>_</td>
+        </tr>
+        <tr>
+                <td colspan="4"id="place"><button onclick="Place() ">Try/Place</td>
+                <td colspan="3"id="delete"><button onclick="Erase() ">Delete</td>
+        </tr>
+</table>
+
+<p id='msg'>Click New Game to start!</p>
+
+<script>
+
+var words = [
+        ["purple", "pulp", "rue", "pure"],      // game #1
+        ["banish", "bash", "nab", "bias"]       // game #2
+];
+var locations = [
+        ["xxxxXxxxxxxXxxxxxxXxxxXXXXXXxXxXxxxxXxXxxxxXxxxxx", "2,4,a", "5,1,d", "4,4,d", "2,4,d"],      // game #1
+        ["xxxXxxxxxXXXXxXxxXxxxXxxXxxxXXXXxxxxxxXxxxxxxxxxx", "4,1,d", "3,2,a", "1,3,d", "1,5,a"]      // game #2
+];
+
+function str_to_array(str)
+{
+        strarray = [];
+        for (i=0; i<str.length;i++)
+        {
+                strarray.push(str[i]);
+        }
+        return strarray;
+}
+
+function update_anagram(letter)
+{
+        for(var i=0; i<7; i++)
+        {
+                console.log("A letter was clicked on: ", letter);
+                var x = document.getElementById("anagram_letters").rows[2].cells;
+                if (x[i].innerHTML == "_")
+                {
+                        console.log("Checking element");
+                        x[i].innerHTML = letter;
+                        x[i].style.color = "Black";
+                        x[i+1].style.color = "red";
+                        break;
+                }
+        }
+}
+
+function Erase()
+{
+        // remove the last letter from anagram_letters
+        var x = document.getElementById("anagram_letters").rows[2].cells;
+        var letter_to_erase;
+        for (var i=6; i>=0; i--)
+        {
+                if (x[i].innerHTML != "_")
+                {
+                        letter_to_erase = x[i].innerHTML;
+                        x[i].innerHTML = "_";
+                        x[i].style.color = "red";
+                        x[i+1].style.color = "Black";
+                        console.log("Deleted letter:",letter_to_erase);
+                        break;
+                }
+        }
+
+        //turn lettter back on in guessing pallete
+        var x = document.getElementById("anagram_letters").rows[0].cells;
+        for (var i=0; i<7; i++)
+        {
+                if (x[i].innerHTML == letter_to_erase && x[i].style.color == "blue")
+                {
+                        x[i].style.color = "Black";
+                        console.log("Turned letter back on:",letter_to_erase);
+                }
+        }
+}
+
+ function Place()
+{
+
+        var word = "";
+        var x = document.getElementById("anagram_letters").rows[2].cells;
+        var i = 0;
+        while (x[i].innerHTML != "_" && i < 7)
+        {
+                word += x[i].innerHTML;
+                i++;
+        }
+        console.log(word);
+        var location = 0;
+        var direction;
+        for (var i=0; i<words[0].length; i++)
+        {
+                // get the location in the words list
+                if (words[0][i] == word)
+                {
+                        location = i + 1;
+                        console.log(location);
+                        break;
+                }
+        }
+
+        var move_location = locations[0][location] // gets the coordinates of the move locations
+        console.log(move_location);
+        placeword = str_to_array(word); // need an array so we can add one letter at a time
+        console.log(placeword);
+        console.log(move_location);
+        console.log(move_location[4]);
+        var move1 = Number(move_location[0]) -1;
+        var move2 = Number(move_location[2]) -1;
+
+        if (move_location[4] == "a")
+
+                {
+                for (var i=0; i<placeword.length; i++){
+
+                        if (i>0) {move1 = 1 + move1;}
+                        //move2 = i + Number(move_location[2]);
+                        console.log(move1);
+                        console.log(move2);
+                        //we know to update the row
+                        update_cell(move1, move2, placeword[i]);
+                }
+                }
+                if (move_location[4] == "d")
+                {
+                        for (var i=0; i<placeword.length; i++){
+                        if (i>0) {move2 = 1 + move2;}
+                        console.log(Number(move_location[2]));
+                        console.log(move2);
+                        update_cell(move1, move2, placeword[i]);
+                }
+
+                }
+
+        locations[[]]
+resetLetters();
+        sortLetters();
+        resetPalette();
+
+}
+
+
+function Shuffle(game1)
+{
+        var game1 = str_to_array(words[0][0]);
+        for (let i=game1.length - 1; i>0; i--) {
+                let rand = Math.floor(Math.random() * i);
+                let temp = game1[i];
+                game1[i] = game1[rand];
+                game1[rand] = temp;
+        }
+         for(var i=0; i<game1.length; i++)
+        {
+                var x = document.getElementById("anagram_letters").rows[0].cells;
+                x[i].innerHTML = game1[i];
+        }
+        console.log("Shuffling: ", game1);
+        //message player
+        var message = "Now playing: (" + game1+")";
+        document.getElementById('msg').innerHTML = message;
+}
+
+function update_cell(position, row, letter)
+{
+        var x = document.getElementById("gameboard").rows[row].cells;
+        x[position].innerHTML = letter;
+}
+
+
+function wasClicked(){
+      if (this.style.color != "blue"){
+                this.style.color = "blue"; //change to blue to specify inactivity
+                // add the letter to guessing palette
+                update_anagram(this.innerHTML)
+        }
+}
+
+function resetLetters(){
+        var x = document.getElementById("anagram_letters").rows[0].cells;
+        for (var i=0; i<7; i++){
+                if (x[i].style.color == "blue"){
+                        x[i].style.color = "Black";
+                }
+        }
+        console.log("Letters reset");
+}
+
+function resetPalette(){
+        //reset guessing palette
+        var x = document.getElementById("anagram_letters").rows[2].cells;
+        for (var i=6;i>=0;i--){
+                x[i].innerHTML = "_";
+                x[i].style.color = "Black";
+                //x[i].style.color = "Black”;
+        }
+        console.log("Guessing palette reset");
+}
+
+function clearBoard(){
+        //clear game board
+        resetLetters();
+        resetPalette();
+        for(var i=0; i<7; i++){
+                for(var j=0; j<7; j++){
+                        var x = document.getElementById("gameboard").rows[i].cells;
+                        x[j].innerHTML = "&nbsp";
+                }
+        }
+}
+
+function drawBoard(gamestr){
+        clearBoard();
+        var rowcount = 1;
+        var currentrow = 0;
+        for(var i=0; i<gamestr.length; i++){
+                if (gamestr[i] == 'X') {
+                        update_cell(rowcount-1, currentrow, "_");
+                }
+                if (rowcount == 7){
+                        rowcount = 0;
+                        currentrow++;
+                }
+                rowcount++;
+        }
+}
+
+function sortLetters(){
+        //sort game letters alphabetically
+        var game1 = str_to_array(words[0][0]);
+        game1.sort();
+        console.log("Playing:",game1);
+        for(var i=0; i<game1.length; i++){
+                var x = document.getElementById("anagram_letters").rows[0].cells;
+                x[i].innerHTML = game1[i];
+        }
+        //message player
+        var message = "Now playing: (" + game1+")";
+        document.getElementById('msg').innerHTML = message;
+}
+
+function newGame() {
+        console.log("Startng new game");
+        var rand = Math.floor(Math.random() * locations.length);
+        var gamestr = locations[rand][0];
+        drawBoard(gamestr);
+        sortLetters();
+        // Starting spot in guessing palette turns red to indicate where letter will be placed
+        var x = document.getElementById("anagram_letters").rows[2].cells;
+        x[0].style.color = "red";
+        // Enable clicks on given letters
+        for (var i=1;i<7;i++) {
+                document.getElementById("p"+i).addEventListener("click", wasClicked, false);
+
+        }
+}
+</script>
+</body>
+</html>
